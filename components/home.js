@@ -35,8 +35,8 @@ export class HomeComponent {
                             </div>
                         </div>
                         <div class="hero-buttons">
-                            <button class="btn btn-primary" onclick="app.navigateTo('systems')">
-                                <i class="fas fa-code"></i> View My Systems
+                            <button class="btn btn-primary" onclick="app.navigateTo('architecture')">
+                                <i class="fas fa-code"></i> View My Architecture
                             </button>
                             <button class="btn btn-secondary" onclick="app.navigateTo('contact')">
                                 <i class="fas fa-handshake"></i> Let's Build Together

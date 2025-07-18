@@ -19,12 +19,6 @@ class BackendPortfolioApp {
         if (this.isInitialized) return;
         
         try {
-            // Validate configuration
-            config.validate();
-            
-            // Initialize EmailJS
-            this.initializeEmailJS();
-            
             // Setup event listeners
             this.setupEventListeners();
             
@@ -34,21 +28,34 @@ class BackendPortfolioApp {
             // Initialize router
             this.router.init();
             
+            // Initialize EmailJS (non-blocking)
+            this.initializeEmailJS();
+            
             // Hide loading screen
             await this.hideLoadingScreen();
             
             this.isInitialized = true;
-            console.log('✅ Portfolio SPA initialized successfully');
+            console.log('Portfolio SPA initialized successfully');
             
         } catch (error) {
-            console.error('❌ Failed to initialize portfolio:', error);
+            console.error('Failed to initialize portfolio:', error);
+            // Force hide loading screen on error
+            await this.hideLoadingScreen();
         }
     }
 
     // Initialize EmailJS service
     initializeEmailJS() {
-        emailjs.init(config.emailJS.publicKey);
-        console.log('✅ EmailJS initialized with environment configuration');
+        try {
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init(config.emailJS.publicKey);
+                console.log('EmailJS initialized with environment configuration');
+            } else {
+                console.warn('EmailJS not loaded - contact form will not work');
+            }
+        } catch (error) {
+            console.error('Failed to initialize EmailJS:', error);
+        }
     }
 
     // Register all components with the router
@@ -335,13 +342,17 @@ class BackendPortfolioApp {
             };
             
             // Send email using EmailJS
-            const response = await emailjs.send(
-                config.emailJS.serviceId,
-                config.emailJS.templateId,
-                templateParams
-            );
+            if (typeof emailjs !== 'undefined') {
+                const response = await emailjs.send(
+                    config.emailJS.serviceId,
+                    config.emailJS.templateId,
+                    templateParams
+                );
+                console.log('Email sent successfully:', response);
+            } else {
+                throw new Error('EmailJS not available');
+            }
             
-            console.log('Email sent successfully:', response);
             this.showNotification(`Thank you ${name}! Your message has been sent successfully. I'll get back to you soon.`, 'success');
             form.reset();
             

@@ -17,9 +17,8 @@ class Config {
             'EMAILJS_TEMPLATE_ID': 'template_6121fak'
         };
 
-        // In a real build process, this would come from process.env
-        // For now, we'll use the fallback values
-        return process?.env?.[name] || envVars[name];
+        // Use fallback values since this is a frontend application
+        return envVars[name];
     }
 
     // Validate that all required environment variables are set
